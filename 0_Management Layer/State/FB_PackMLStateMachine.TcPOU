@@ -1,0 +1,81 @@
+FUNCTION_BLOCK FB_PackMLStateMachine
+VAR_INPUT
+    CmdStart : BOOL;
+    CmdStop : BOOL;
+    CmdReset : BOOL;
+    CmdHold : BOOL;
+    CmdAbort : BOOL;
+END_VAR
+VAR_OUTPUT
+    StateCurrent : E_PackMLState := E_PackMLState.Stopped;
+    CommandAccepted : BOOL;
+    CommandDeniedReason : UDINT;
+END_VAR
+
+CommandAccepted := FALSE;
+CommandDeniedReason := 0;
+
+CASE StateCurrent OF
+    E_PackMLState.Stopped:
+        IF CmdReset THEN
+            StateCurrent := E_PackMLState.Idle;
+            CommandAccepted := TRUE;
+        ELSIF CmdAbort THEN
+            StateCurrent := E_PackMLState.Aborted;
+            CommandAccepted := TRUE;
+        END_IF
+
+    E_PackMLState.Idle:
+        IF CmdStart THEN
+            StateCurrent := E_PackMLState.Starting;
+            CommandAccepted := TRUE;
+        ELSIF CmdAbort THEN
+            StateCurrent := E_PackMLState.Aborted;
+            CommandAccepted := TRUE;
+        END_IF
+
+    E_PackMLState.Starting:
+        StateCurrent := E_PackMLState.Execute;
+
+    E_PackMLState.Execute:
+        IF CmdHold THEN
+            StateCurrent := E_PackMLState.Holding;
+            CommandAccepted := TRUE;
+        ELSIF CmdStop THEN
+            StateCurrent := E_PackMLState.Stopping;
+            CommandAccepted := TRUE;
+        ELSIF CmdAbort THEN
+            StateCurrent := E_PackMLState.Aborted;
+            CommandAccepted := TRUE;
+        END_IF
+
+    E_PackMLState.Holding:
+        StateCurrent := E_PackMLState.Held;
+
+    E_PackMLState.Held:
+        IF CmdStart THEN
+            StateCurrent := E_PackMLState.Unholding;
+            CommandAccepted := TRUE;
+        ELSIF CmdAbort THEN
+            StateCurrent := E_PackMLState.Aborted;
+            CommandAccepted := TRUE;
+        END_IF
+
+    E_PackMLState.Unholding:
+        StateCurrent := E_PackMLState.Execute;
+
+    E_PackMLState.Stopping:
+        StateCurrent := E_PackMLState.Stopped;
+
+    E_PackMLState.Aborted:
+        IF CmdReset THEN
+            StateCurrent := E_PackMLState.Resetting;
+            CommandAccepted := TRUE;
+        END_IF
+
+    E_PackMLState.Resetting:
+        StateCurrent := E_PackMLState.Stopped;
+
+ELSE
+    CommandDeniedReason := 16#DEAD0001;
+END_CASE

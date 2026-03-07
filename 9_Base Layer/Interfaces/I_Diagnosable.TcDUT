@@ -1,0 +1,7 @@
+(***
+Common diagnostics interface for all framework components.
+***)
+INTERFACE I_Diagnosable
+    METHOD GetHealthCode : UDINT
+    METHOD GetHealthText : STRING(80)
+END_INTERFACE

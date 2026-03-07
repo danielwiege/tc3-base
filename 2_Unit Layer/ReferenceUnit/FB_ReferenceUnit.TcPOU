@@ -1,0 +1,39 @@
+FUNCTION_BLOCK FB_ReferenceUnit IMPLEMENTS I_Lifecycle, I_Diagnosable
+VAR_INPUT
+    Enable : BOOL;
+END_VAR
+VAR
+    _packMl : FB_PackMLStateMachine;
+    _healthCode : UDINT;
+END_VAR
+
+METHOD Init : BOOL
+_healthCode := 0;
+Init := TRUE;
+
+METHOD Link : BOOL
+Link := TRUE;
+
+METHOD ExecuteFast
+(* IO-facing logic goes here. *)
+
+METHOD ExecuteMain
+IF NOT Enable THEN
+    _healthCode := 16#1001;
+    _packMl(CmdStop := TRUE);
+ELSE
+    _packMl();
+END_IF
+
+METHOD Shutdown
+_healthCode := 0;
+
+METHOD GetHealthCode : UDINT
+GetHealthCode := _healthCode;
+
+METHOD GetHealthText : STRING(80)
+IF _healthCode = 0 THEN
+    GetHealthText := 'OK';
+ELSE
+    GetHealthText := 'ReferenceUnit disabled/interlocked';
+END_IF

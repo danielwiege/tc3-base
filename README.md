@@ -132,7 +132,7 @@ Deterministic high-speed signal processing in `FastCall` and robust process/busi
 
 ## 6) Required Folder Structure
 
-The project should follow this exact top-level structure:
+The project now ships with this exact top-level structure:
 
 - `0_Management Layer`
 - `1_Line Layer`
@@ -175,6 +175,28 @@ The project should follow this exact top-level structure:
 5. Implement one ISA-88 unit with recipe and phase as reference.
 6. Build HMI/MES interface around PackML + alarm model.
 7. Add testing and diagnostics package.
+
+---
+
+## 9) Included Scaffold (New)
+
+This repository now includes practical starter artifacts:
+
+- `9_Base Layer/Interfaces/I_Lifecycle.TcDUT`
+- `9_Base Layer/Interfaces/I_Diagnosable.TcDUT`
+- `9_Base Layer/Enums/E_PackMLState.TcDUT`
+- `9_Base Layer/DTO/ST_ThreadExchange.TcDUT`
+- `0_Management Layer/State/FB_PackMLStateMachine.TcPOU`
+- `0_Management Layer/Managers/FB_AppManager.TcPOU`
+- `2_Unit Layer/ReferenceUnit/FB_ReferenceUnit.TcPOU`
+- `tools/validate_structure.py`
+- `docs/quickstart.md`
+
+Run the project consistency check:
+
+```bash
+python3 tools/validate_structure.py
+```
 
 ---
 
