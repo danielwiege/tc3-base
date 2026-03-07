@@ -1,0 +1,23 @@
+FUNCTION_BLOCK FB_AppManager IMPLEMENTS I_Lifecycle
+VAR
+    _stateMachine : FB_PackMLStateMachine;
+    _threadExchange : ST_ThreadExchange;
+END_VAR
+
+METHOD Init : BOOL
+Init := TRUE;
+
+METHOD Link : BOOL
+Link := TRUE;
+
+METHOD ExecuteFast
+_threadExchange.CycleCounterFast := _threadExchange.CycleCounterFast + 1;
+_threadExchange.HandshakeFastToMain := NOT _threadExchange.HandshakeFastToMain;
+
+METHOD ExecuteMain
+_threadExchange.CycleCounterMain := _threadExchange.CycleCounterMain + 1;
+_stateMachine();
+
+METHOD Shutdown
+_threadExchange.HandshakeFastToMain := FALSE;
+_threadExchange.HandshakeMainToFast := FALSE;

@@ -1,0 +1,10 @@
+TYPE ST_ThreadExchange :
+STRUCT
+    CycleCounterFast : UDINT;
+    CycleCounterMain : UDINT;
+    HandshakeFastToMain : BOOL;
+    HandshakeMainToFast : BOOL;
+    LastEventCode : UDINT;
+    LastTimestampNs : ULINT;
+END_STRUCT
+END_TYPE

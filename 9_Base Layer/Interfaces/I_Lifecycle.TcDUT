@@ -1,0 +1,10 @@
+(***
+Interface contract for framework lifecycle behavior.
+***)
+INTERFACE I_Lifecycle
+    METHOD Init : BOOL
+    METHOD Link : BOOL
+    METHOD ExecuteFast
+    METHOD ExecuteMain
+    METHOD Shutdown
+END_INTERFACE
