@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Program" Id="{1d230e6f-5206-4d1f-9320-5705782bc13d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_Program EXTENDS FB_ProgramBase
+VAR
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FastCall" Id="{e0f326ec-dfdd-4a3e-8dbc-857be97f8af9}">
+      <Declaration><![CDATA[METHOD FastCall : BOOL
+VAR_INST
+	_Count : UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Count := _Count + 1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{4c800ff2-371c-4fbd-bb4f-13a06770307f}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

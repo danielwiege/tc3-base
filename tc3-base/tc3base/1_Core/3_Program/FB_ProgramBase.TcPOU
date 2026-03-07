@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ProgramBase" Id="{5fcbe254-e33f-4809-9fa9-2e1f108e44a6}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'hide_all_locals'}
+FUNCTION_BLOCK PUBLIC FB_ProgramBase EXTENDS FB_Base
+VAR
+	{attribute 'hide'} 
+	_AmountChildresFastCall			: UINT;
+	{attribute 'hide'} 
+	_ChildrenFastCall				: ARRAY[1..Par_Core.MaxAmountProgramChildren] OF I_FastCall;
+	
+	{attribute 'hide'} 
+	_AmountChildresMainCall			: UINT;
+	{attribute 'hide'} 
+	_ChildrenMainCall				: ARRAY[1..Par_Core.MaxAmountProgramChildren] OF I_MainCall;	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FastCall" Id="{9a607021-28d8-476c-9a7c-44f9c44bba55}">
+      <Declaration><![CDATA[METHOD FastCall : BOOL
+VAR_INST
+	_Loop 					: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^.FastCall() THEN
+	RETURN;
+END_IF
+
+FOR _Loop := 1 TO MIN(_AmountChildresFastCall, Par_Core.MaxAmountProgramChildren) DO
+	IF _ChildrenFastCall[_Loop] <> 0 THEN
+		_ChildrenFastCall[_Loop].FastCall();
+	END_IF
+END_FOR
+
+FastCall := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Init" Id="{28ef210f-950e-4609-8af6-683e7ab12052}">
+      <Declaration><![CDATA[METHOD Init : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Init := RegisterChild(GVL_Manager.Collection);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{3a5aae8f-73d9-4ff8-b19e-11fbc406e5a5}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL
+VAR_INST
+	_Loop 					: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^.MainCall() THEN
+	RETURN;
+END_IF
+
+FOR _Loop := 1 TO MIN(_AmountChildresMainCall, Par_Core.MaxAmountProgramChildren) DO
+	IF _ChildrenMainCall[_Loop] <> 0 THEN
+		_ChildrenMainCall[_Loop].MainCall();
+	END_IF
+END_FOR
+
+MainCall := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterChild" Id="{7a337bb8-9da3-4a6e-a091-267fa40f0522}">
+      <Declaration><![CDATA[METHOD PUBLIC RegisterChild : BOOL
+VAR_INPUT
+	i_Child					: I_Object;
+END_VAR
+VAR_INST
+	_FastCall				: I_FastCall;
+	_MainCall				: I_MainCall;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF __QUERYINTERFACE(i_Child, _FastCall) THEN
+	IF _AmountChildresFastCall < Par_Core.MaxAmountProgramChildren THEN 
+		_AmountChildresFastCall := _AmountChildresFastCall + 1;
+		_ChildrenFastCall[_AmountChildresFastCall] := _FastCall;
+		RegisterChild := TRUE;
+	END_IF
+END_IF
+
+IF __QUERYINTERFACE(i_Child, _MainCall) THEN
+	IF _AmountChildresMainCall < Par_Core.MaxAmountProgramChildren THEN 
+		_AmountChildresMainCall := _AmountChildresMainCall + 1;
+		_ChildrenMainCall[_AmountChildresMainCall] := _MainCall;
+		RegisterChild := TRUE;
+	END_IF
+END_IF
+
+IF NOT RegisterChild THEN
+	; {info <'todo: Log if child could not be registered.'>}
+END_IF ]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

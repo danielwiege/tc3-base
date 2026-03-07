@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ManagerAdapter" Id="{0dd08bfa-4e2a-4652-9e20-faabc809df32}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_ManagerAdapter EXTENDS FB_Base
+VAR
+	_DefaultInitManager					: FB_InitManager(THIS^);
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="GetInitManager" Id="{946757df-a093-4f42-9fc2-bf8add115c10}">
+      <Declaration><![CDATA[METHOD PUBLIC GetInitManager : I_InitManager
+VAR_INPUT
+	i_Requester			: I_Object;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetInitManager := _DefaultInitManager;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Base" Id="{99831585-8e51-4413-a001-183bae3c2a63}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC ABSTRACT FB_Base EXTENDS FB_Object IMPLEMENTS I_Base
+VAR
+	{attribute 'hide'}
+	_Parent					: I_Object;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FastCall" Id="{00f7cbcb-b9b1-4bce-b18b-8e33feed02f0}">
+      <Declaration><![CDATA[METHOD FastCall : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FastCall := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_Init" Id="{275ff180-9ba4-4e87-a0e6-37344ca3ed0e}">
+      <Declaration><![CDATA[METHOD FB_Init : BOOL
+VAR_INPUT
+    bInitRetains				: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode					: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)  
+	i_Parent					: I_Object;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Parent := i_Parent;
+
+RegisterToInitManager();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{715a832f-f3da-4b41-954e-71879b92c558}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+
+MainCall := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterToInitManager" Id="{9bc39498-a1a5-4bde-9646-8e109cdadb4a}">
+      <Declaration><![CDATA[METHOD PRIVATE RegisterToInitManager : BOOL
+VAR_INST
+	_InitManager					: I_InitManager;
+	_IgnoreInitRegistration			: I_IgnoreInitRegistration;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_InitManager := GVL_Manager.Managers.GetInitManager(THIS^);
+
+IF _InitManager <> 0 AND __QUERYINTERFACE(THIS^, _IgnoreInitRegistration) THEN
+	_InitManager.RegisterObject(THIS^);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

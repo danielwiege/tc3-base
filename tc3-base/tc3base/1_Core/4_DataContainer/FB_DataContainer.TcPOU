@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_DataContainer" Id="{157af857-8f5c-4bab-b61c-31a6e89284e8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_DataContainer EXTENDS FB_Base
+VAR
+	{attribute 'hide'} 
+	_AmountChildresFastCall			: UINT;
+	{attribute 'hide'} 
+	_ChildrenFastCall				: ARRAY[1..Par_Core.MaxAmountProgramChildren] OF I_FastCall;
+	
+	{attribute 'hide'} 
+	_AmountChildresMainCall			: UINT;
+	{attribute 'hide'} 
+	_ChildrenMainCall				: ARRAY[1..Par_Core.MaxAmountProgramChildren] OF I_MainCall;	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FastCall" Id="{b02b0560-6460-4be3-a23a-a56f86e9e2c9}">
+      <Declaration><![CDATA[{error 'Add method implementation or delete method to use base implementation'}
+METHOD FastCall : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Init" Id="{ffdfefec-6db8-41da-9d56-73066cd5a612}">
+      <Declaration><![CDATA[{error 'Add method implementation or delete method to use base implementation'}
+METHOD Init : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{5b7bbc98-5f3f-49f3-9909-50c8019fc49b}">
+      <Declaration><![CDATA[{error 'Add method implementation or delete method to use base implementation'}
+METHOD MainCall : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterChild" Id="{8c43e39a-cd62-47fc-b052-3f07b3bfad16}">
+      <Declaration><![CDATA[METHOD PUBLIC RegisterChild : BOOL
+VAR_INPUT
+	i_Child					: I_Object;
+END_VAR
+VAR_INST
+	_FastCall				: I_FastCall;
+	_MainCall				: I_MainCall;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF __QUERYINTERFACE(i_Child, _FastCall) THEN
+	IF _AmountChildresFastCall < Par_Core.MaxAmountProgramChildren THEN 
+		_AmountChildresFastCall := _AmountChildresFastCall + 1;
+		_ChildrenFastCall[_AmountChildresFastCall] := _FastCall;
+		RegisterChild := TRUE;
+	END_IF
+END_IF
+
+IF __QUERYINTERFACE(i_Child, _MainCall) THEN
+	IF _AmountChildresMainCall < Par_Core.MaxAmountProgramChildren THEN 
+		_AmountChildresMainCall := _AmountChildresMainCall + 1;
+		_ChildrenMainCall[_AmountChildresMainCall] := _MainCall;
+		RegisterChild := TRUE;
+	END_IF
+END_IF
+
+IF NOT RegisterChild THEN
+	; {info <'todo: Log if child could not be registered.'>}
+END_IF ]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

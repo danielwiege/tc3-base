@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Platform Name="TwinCAT OS (ARMV7-A)" />
+    <Platform Name="TwinCAT OS (ARMV7-M)" />
+    <Platform Name="TwinCAT OS (ARMV8-A)" />
+    <Platform Name="TwinCAT OS (x64)" />
+    <Platform Name="TwinCAT OS (x64-E)" />
+    <Platform Name="TwinCAT RT (x64)" />
+    <Platform Name="TwinCAT RT (x86)" />
+  </Configurations>
+  <Project Path="tc3-base/tc3-base.tspproj" Type="dfbe7525-6864-4e62-8b2e-d530d69d9d96" />
+  <Project Path="tc3-test/tc3-test.tsproj" Type="b1e792be-aa5f-4e3c-8c82-674bf9c0715b" />
+</Solution>

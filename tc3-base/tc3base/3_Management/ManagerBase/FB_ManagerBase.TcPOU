@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ManagerBase" Id="{d3708c32-ce7f-4c5f-9f72-413d8dd0bb1d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC ABSTRACT FB_ManagerBase EXTENDS FB_Base IMPLEMENTS I_Manager]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FastCall" Id="{f99dac62-66a1-4214-b6fc-cde3b92a3a3f}">
+      <Declaration><![CDATA[METHOD FastCall : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsResponsible" Id="{1762842f-fc96-4c4d-9dcf-e040d170fb37}">
+      <Declaration><![CDATA[METHOD PUBLIC IsResponsible : BOOL
+VAR_INPUT
+	i_Requester		: I_Object;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsResponsible := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{ccb8139d-fd71-4e96-833a-f7634bed18f7}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

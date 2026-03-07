@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_InitManager" Id="{dceef3b6-0d7b-497d-ae02-15a31993ffa6}">
+    <Declaration><![CDATA[INTERFACE I_InitManager EXTENDS I_Manager]]></Declaration>
+    <Method Name="RegisterObject" Id="{ff555b39-93dc-40c1-acb5-9a11a8996506}">
+      <Declaration><![CDATA[METHOD RegisterObject : BOOL
+VAR_INPUT
+	i_Object		: I_Object;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

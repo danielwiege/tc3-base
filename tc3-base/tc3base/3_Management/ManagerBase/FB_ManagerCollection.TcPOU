@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_ManagerCollection" Id="{5a4996b3-111b-4562-b763-27df1823adb2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_ManagerCollection EXTENDS FB_Base
+VAR
+	_AmountOfManagers		: UINT;
+	_Managers				: ARRAY[1..Par_Manager.MaxAmountManagers] OF I_Manager;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FastCall" Id="{f9d15845-1583-4c87-a319-03949a4e1a3b}">
+      <Declaration><![CDATA[METHOD FastCall : BOOL
+VAR_INST
+	_Loop				: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR _Loop := 1 TO MIN(_AmountOfManagers, Par_Manager.MaxAmountManagers) DO
+	_Managers[_Loop].FastCall();
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{73312755-9b8f-417c-8063-4f800199b5fa}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL
+VAR_INST
+	_Loop				: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR _Loop := 1 TO MIN(_AmountOfManagers, Par_Manager.MaxAmountManagers) DO
+	_Managers[_Loop].MainCall();
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterManager" Id="{d8c9129e-ecdb-4d66-bca3-a3cb7205fc3b}">
+      <Declaration><![CDATA[METHOD PUBLIC RegisterManager : BOOL
+VAR_INPUT
+	i_Manager		: I_Manager;
+END_VAR
+VAR_INST
+	_Loop			: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_Manager = 0 THEN
+	RETURN;
+END_IF
+
+// Check if i_Manager is not already registered
+FOR	_Loop := 1 TO MIN(_AmountOfManagers + 1, Par_Manager.MaxAmountManagers) DO
+	IF _Managers[_Loop] = i_Manager THEN
+		{info <'DanWie: Add Logging.'>}
+		RegisterManager := FALSE;
+		RETURN;
+	END_IF
+END_FOR
+
+// Check if there is still space in the collection for registration
+IF _AmountOfManagers + 1 > Par_Manager.MaxAmountManagers THEN
+	{info <'DanWie: Add Logging.'>}
+	RegisterManager := FALSE;
+	RETURN;
+END_IF
+
+_AmountOfManagers := _AmountOfManagers + 1;
+_Managers[_AmountOfManagers] := i_Manager;
+
+RegisterManager := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

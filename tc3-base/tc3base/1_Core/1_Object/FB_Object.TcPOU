@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Object" Id="{4248d5e9-faeb-4de6-a735-9ef2c41417ff}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection'}
+{attribute 'no_explicit_call' := 'do not call this class directly'} 
+FUNCTION_BLOCK PUBLIC ABSTRACT FB_Object IMPLEMENTS I_Object
+VAR
+	{attribute 'hide'}
+	_InitDone							: BOOL;	
+
+	{attribute 'instance-path'} 
+    {attribute 'noinit'}
+	{attribute 'hide'}
+	_InstanceName						: STRING;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Init" Id="{d9ca6e03-e857-40f6-8d49-91ebacda7e22}">
+      <Declaration><![CDATA[METHOD Init : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Init := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="InstanceName" Id="{14c3a3c2-fe97-4be3-a8cb-74ba478eb9f8}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY PUBLIC InstanceName : STRING]]></Declaration>
+      <Get Name="Get" Id="{b81159c7-5fe0-473d-b8c0-bce9a4c7bec3}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[InstanceName := _InstanceName;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

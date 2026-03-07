@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_InitManager" Id="{829adbe0-c931-49f6-9fae-9f9ddb977926}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_InitManager EXTENDS FB_ManagerBase IMPLEMENTS I_InitManager, I_IgnoreInitRegistration
+VAR
+	_AmountOfObjects				: UINT;
+	{attribute 'hide'}
+	_ObjectList						: ARRAY[1..Par_InitManager.MaxAmountObject] OF I_Object;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_Init" Id="{7b6d4ee0-1347-4d26-b54a-801588fe3a33}">
+      <Declaration><![CDATA[METHOD FB_Init : BOOL
+VAR_INPUT
+	bInitRetains	: BOOL; 	(* TRUE: the retain variables are initialized (reset warm / reset cold)*)
+	bInCopyCode		: BOOL; 	(* TRUE: the instance will be copied to the copy code afterward (online change)  *)
+	i_Parent		: I_Object;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GVL_Manager.Collection.RegisterManager(THIS^);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RegisterObject" Id="{5e2339a4-3275-4eb7-a6b3-5f7e0c2ed63d}">
+      <Declaration><![CDATA[METHOD RegisterObject : BOOL
+VAR_INPUT
+	i_Object		: I_Object;
+END_VAR
+VAR_INST
+	_Loop			: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_Object = 0 THEN
+	RETURN;
+END_IF
+
+// Check if i_Manager is not already registered
+FOR	_Loop := 1 TO MIN(_AmountOfObjects + 1, Par_Manager.MaxAmountManagers) DO
+	IF _ObjectList[_Loop] = i_Object THEN
+		{info <'DanWie: Add Logging.'>}
+		RegisterObject := FALSE;
+		RETURN;
+	END_IF
+END_FOR
+
+// Check if there is still space in the collection for registration
+IF _AmountOfObjects + 1 > Par_Manager.MaxAmountManagers THEN
+	{info <'DanWie: Add Logging.'>}
+	RegisterObject := FALSE;
+	RETURN;
+END_IF
+
+_AmountOfObjects := _AmountOfObjects + 1;
+_ObjectList[_AmountOfObjects] := i_Object;
+
+RegisterObject := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

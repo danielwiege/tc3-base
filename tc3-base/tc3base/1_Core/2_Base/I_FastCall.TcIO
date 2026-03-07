@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_FastCall" Id="{8a39ef24-228a-4e63-ba6e-7d10b193ae2e}">
+    <Declaration><![CDATA[INTERFACE I_FastCall EXTENDS __System.IQueryInterface 
+]]></Declaration>
+    <Method Name="FastCall" Id="{000586ee-1207-4138-bacd-40c395ac3d41}">
+      <Declaration><![CDATA[METHOD FastCall : BOOL]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

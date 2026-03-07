@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Prg_MainCall" Id="{89223677-ca7f-4e78-9fc2-b5acd4173a8f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Prg_MainCall]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Prg.MainCall();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

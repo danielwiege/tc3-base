@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_Object" Id="{d80c9794-bfb2-4f7e-b9c3-d1717d1b67de}">
+    <Declaration><![CDATA[INTERFACE I_Object EXTENDS __System.IQueryInterface 
+]]></Declaration>
+    <Method Name="Init" Id="{45afdc82-6378-482a-99f8-b69df29b0a67}">
+      <Declaration><![CDATA[METHOD Init : BOOL]]></Declaration>
+    </Method>
+    <Property Name="InstanceName" Id="{3a65d37b-74b1-410f-87f8-833d77006ad5}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY PUBLIC InstanceName : STRING]]></Declaration>
+      <Get Name="Get" Id="{8fee40df-05b2-4ff9-a88c-66738fbcbe97}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>
