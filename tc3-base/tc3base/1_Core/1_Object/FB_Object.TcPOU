@@ -19,7 +19,13 @@ END_VAR]]></Declaration>
     <Method Name="Init" Id="{d9ca6e03-e857-40f6-8d49-91ebacda7e22}">
       <Declaration><![CDATA[METHOD Init : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Init := TRUE;]]></ST>
+        <ST><![CDATA[IF _InitDone THEN
+	Init := TRUE;
+	RETURN;
+END_IF
+
+_InitDone := TRUE;
+Init := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Property Name="InstanceName" Id="{14c3a3c2-fe97-4be3-a8cb-74ba478eb9f8}">

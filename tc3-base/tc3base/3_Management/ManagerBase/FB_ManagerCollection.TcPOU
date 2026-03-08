@@ -16,9 +16,17 @@ VAR_INST
 	_Loop				: UINT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR _Loop := 1 TO MIN(_AmountOfManagers, Par_Manager.MaxAmountManagers) DO
-	_Managers[_Loop].FastCall();
-END_FOR]]></ST>
+        <ST><![CDATA[IF NOT SUPER^.FastCall() THEN
+	RETURN;
+END_IF
+
+FOR _Loop := 1 TO MIN(_AmountOfManagers, Par_Manager.MaxAmountManagers) DO
+	IF _Managers[_Loop] <> 0 THEN
+		_Managers[_Loop].FastCall();
+	END_IF
+END_FOR
+
+FastCall := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="MainCall" Id="{73312755-9b8f-417c-8063-4f800199b5fa}">
@@ -27,9 +35,17 @@ VAR_INST
 	_Loop				: UINT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR _Loop := 1 TO MIN(_AmountOfManagers, Par_Manager.MaxAmountManagers) DO
-	_Managers[_Loop].MainCall();
-END_FOR]]></ST>
+        <ST><![CDATA[IF NOT SUPER^.MainCall() THEN
+	RETURN;
+END_IF
+
+FOR _Loop := 1 TO MIN(_AmountOfManagers, Par_Manager.MaxAmountManagers) DO
+	IF _Managers[_Loop] <> 0 THEN
+		_Managers[_Loop].MainCall();
+	END_IF
+END_FOR
+
+MainCall := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="RegisterManager" Id="{d8c9129e-ecdb-4d66-bca3-a3cb7205fc3b}">
@@ -39,6 +55,7 @@ VAR_INPUT
 END_VAR
 VAR_INST
 	_Loop			: UINT;
+	_pLogManager	: POINTER TO FB_LogManager;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF i_Manager = 0 THEN
@@ -48,15 +65,18 @@ END_IF
 // Check if i_Manager is not already registered
 FOR	_Loop := 1 TO MIN(_AmountOfManagers + 1, Par_Manager.MaxAmountManagers) DO
 	IF _Managers[_Loop] = i_Manager THEN
-		{info <'DanWie: Add Logging.'>}
-		RegisterManager := FALSE;
+		// Duplicate registration is treated as success to keep init idempotent.
+		RegisterManager := TRUE;
 		RETURN;
 	END_IF
 END_FOR
 
 // Check if there is still space in the collection for registration
 IF _AmountOfManagers + 1 > Par_Manager.MaxAmountManagers THEN
-	{info <'DanWie: Add Logging.'>}
+	_pLogManager := GVL_Manager.Managers.GetLogManager();
+	IF _pLogManager <> 0 THEN
+		_pLogManager^.AddEntry(i_Message := 'ERROR: FB_ManagerCollection is full.');
+	END_IF
 	RegisterManager := FALSE;
 	RETURN;
 END_IF

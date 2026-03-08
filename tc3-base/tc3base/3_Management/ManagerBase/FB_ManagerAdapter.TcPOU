@@ -4,6 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_ManagerAdapter EXTENDS FB_Base
 VAR
 	_DefaultInitManager					: FB_InitManager(THIS^);
+	_DefaultLogManager					: FB_LogManager(THIS^);
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
@@ -16,6 +17,12 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[GetInitManager := _DefaultInitManager;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetLogManager" Id="{2ca947a0-d826-4f25-a659-78bf452d4ee4}">
+      <Declaration><![CDATA[METHOD PUBLIC GetLogManager : POINTER TO FB_LogManager]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetLogManager := ADR(_DefaultLogManager);]]></ST>
       </Implementation>
     </Method>
   </POU>

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="FB_Logger" Id="{3f21913f-9ad4-4393-888f-56e18dd3bff9}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_Logger EXTENDS FB_ManagerAdapter
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_Logger EXTENDS FB_Base
 VAR
 	_pLogManager				: POINTER TO FB_LogManager;
 END_VAR
@@ -10,12 +10,67 @@ END_VAR
       <ST><![CDATA[]]></ST>
     </Implementation>
     <Method Name="Init" Id="{574d614e-7b92-4a97-9c1b-d4431dcbff33}">
-      <Declaration><![CDATA[METHOD PUBLIC Init : BOOL
-VAR_INPUT
-END_VAR
-]]></Declaration>
+      <Declaration><![CDATA[METHOD PUBLIC Init : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Init := TRUE;]]></ST>
+        <ST><![CDATA[Init := SUPER^.Init();
+
+IF NOT Init THEN
+	RETURN;
+END_IF
+
+_pLogManager := GVL_Manager.Managers.GetLogManager();
+Init := _pLogManager <> 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Log" Id="{63adddc5-b55e-4513-b974-4b1ff7eb1a8f}">
+      <Declaration><![CDATA[METHOD PUBLIC Log : BOOL
+VAR_INPUT
+	i_Message		: STRING(255);
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _pLogManager = 0 AND NOT Init() THEN
+	RETURN;
+END_IF
+
+Log := _pLogManager^.AddEntry(i_Message := i_Message);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LogError" Id="{4f97b9a2-bcdd-4549-9d7f-8cb795c459fc}">
+      <Declaration><![CDATA[METHOD PUBLIC LogError : BOOL
+VAR_INPUT
+	i_Message		: STRING(255);
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[LogError := Log(i_Message := CONCAT('ERROR: ', i_Message));]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LogInfo" Id="{32d66f6e-e4f4-4b48-a225-a9db3f7f5f86}">
+      <Declaration><![CDATA[METHOD PUBLIC LogInfo : BOOL
+VAR_INPUT
+	i_Message		: STRING(255);
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[LogInfo := Log(i_Message := CONCAT('INFO: ', i_Message));]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="LogWarning" Id="{c2f87e9e-c6a9-4a7f-8bde-06079330df4a}">
+      <Declaration><![CDATA[METHOD PUBLIC LogWarning : BOOL
+VAR_INPUT
+	i_Message		: STRING(255);
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[LogWarning := Log(i_Message := CONCAT('WARN: ', i_Message));]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReadLatest" Id="{924ce6d3-1458-4ba4-85e8-c4844ce13dea}">
+      <Declaration><![CDATA[METHOD PUBLIC ReadLatest : STRING(255)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _pLogManager = 0 AND NOT Init() THEN
+	ReadLatest := '';
+	RETURN;
+END_IF
+
+ReadLatest := _pLogManager^.GetLatestEntry();]]></ST>
       </Implementation>
     </Method>
   </POU>

@@ -9,7 +9,7 @@
       <Declaration><![CDATA[METHOD FastCall : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[FastCall := SUPER^.FastCall();]]></ST>
       </Implementation>
     </Method>
     <Method Name="IsResponsible" Id="{1762842f-fc96-4c4d-9dcf-e040d170fb37}">
@@ -26,7 +26,7 @@ END_VAR
       <Declaration><![CDATA[METHOD MainCall : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[MainCall := SUPER^.MainCall();]]></ST>
       </Implementation>
     </Method>
   </POU>

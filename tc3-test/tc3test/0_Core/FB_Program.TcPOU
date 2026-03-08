@@ -3,7 +3,9 @@
   <POU Name="FB_Program" Id="{1d230e6f-5206-4d1f-9320-5705782bc13d}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_Program EXTENDS FB_ProgramBase
 VAR
-	
+	_Logger			: FB_Logger(THIS^);
+	_LoggedStart	: BOOL;
+	LastLog			: STRING(255);
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -15,13 +17,28 @@ VAR_INST
 	_Count : UINT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[_Count := _Count + 1;]]></ST>
+        <ST><![CDATA[IF NOT SUPER^.FastCall() THEN
+	RETURN;
+END_IF
+
+_Count := _Count + 1;
+
+FastCall := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="MainCall" Id="{4c800ff2-371c-4fbd-bb4f-13a06770307f}">
       <Declaration><![CDATA[METHOD MainCall : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[MainCall := SUPER^.MainCall();
+IF NOT MainCall THEN
+	RETURN;
+END_IF
+
+IF NOT _LoggedStart THEN
+	_LoggedStart := _Logger.LogInfo(i_Message := 'FB_Program MainCall started.');
+END_IF
+
+LastLog := _Logger.ReadLatest();]]></ST>
       </Implementation>
     </Method>
   </POU>

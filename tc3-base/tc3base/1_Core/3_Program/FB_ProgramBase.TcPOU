@@ -40,7 +40,13 @@ FastCall := TRUE;]]></ST>
     <Method Name="Init" Id="{28ef210f-950e-4609-8af6-683e7ab12052}">
       <Declaration><![CDATA[METHOD Init : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Init := RegisterChild(GVL_Manager.Collection);]]></ST>
+        <ST><![CDATA[Init := SUPER^.Init();
+
+IF NOT Init THEN
+	RETURN;
+END_IF
+
+Init := RegisterChild(GVL_Manager.Collection);]]></ST>
       </Implementation>
     </Method>
     <Method Name="MainCall" Id="{3a5aae8f-73d9-4ff8-b19e-11fbc406e5a5}">
@@ -70,11 +76,29 @@ END_VAR
 VAR_INST
 	_FastCall				: I_FastCall;
 	_MainCall				: I_MainCall;
+	_AlreadyRegistered		: BOOL;
+	_Loop					: UINT;
+	_pLogManager			: POINTER TO FB_LogManager;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF __QUERYINTERFACE(i_Child, _FastCall) THEN
-	IF _AmountChildresFastCall < Par_Core.MaxAmountProgramChildren THEN 
+        <ST><![CDATA[IF i_Child = 0 THEN
+	RETURN;
+END_IF
+
+IF __QUERYINTERFACE(i_Child, _FastCall) THEN
+	_AlreadyRegistered := FALSE;
+
+	FOR _Loop := 1 TO MIN(_AmountChildresFastCall, Par_Core.MaxAmountProgramChildren) DO
+		IF _ChildrenFastCall[_Loop] = _FastCall THEN
+			_AlreadyRegistered := TRUE;
+			EXIT;
+		END_IF
+	END_FOR
+
+	IF _AlreadyRegistered THEN
+		RegisterChild := TRUE;
+	ELSIF _AmountChildresFastCall < Par_Core.MaxAmountProgramChildren THEN 
 		_AmountChildresFastCall := _AmountChildresFastCall + 1;
 		_ChildrenFastCall[_AmountChildresFastCall] := _FastCall;
 		RegisterChild := TRUE;
@@ -82,7 +106,18 @@ END_VAR
 END_IF
 
 IF __QUERYINTERFACE(i_Child, _MainCall) THEN
-	IF _AmountChildresMainCall < Par_Core.MaxAmountProgramChildren THEN 
+	_AlreadyRegistered := FALSE;
+
+	FOR _Loop := 1 TO MIN(_AmountChildresMainCall, Par_Core.MaxAmountProgramChildren) DO
+		IF _ChildrenMainCall[_Loop] = _MainCall THEN
+			_AlreadyRegistered := TRUE;
+			EXIT;
+		END_IF
+	END_FOR
+
+	IF _AlreadyRegistered THEN
+		RegisterChild := TRUE;
+	ELSIF _AmountChildresMainCall < Par_Core.MaxAmountProgramChildren THEN 
 		_AmountChildresMainCall := _AmountChildresMainCall + 1;
 		_ChildrenMainCall[_AmountChildresMainCall] := _MainCall;
 		RegisterChild := TRUE;
@@ -90,7 +125,10 @@ IF __QUERYINTERFACE(i_Child, _MainCall) THEN
 END_IF
 
 IF NOT RegisterChild THEN
-	; {info <'todo: Log if child could not be registered.'>}
+	_pLogManager := GVL_Manager.Managers.GetLogManager();
+	IF _pLogManager <> 0 THEN
+		_pLogManager^.AddEntry(i_Message := 'WARN: FB_ProgramBase.RegisterChild failed.');
+	END_IF
 END_IF ]]></ST>
       </Implementation>
     </Method>

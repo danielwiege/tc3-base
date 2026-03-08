@@ -26,7 +26,7 @@ END_VAR
       <Implementation>
         <ST><![CDATA[_Parent := i_Parent;
 
-RegisterToInitManager();]]></ST>
+FB_Init := RegisterToInitManager();]]></ST>
       </Implementation>
     </Method>
     <Method Name="MainCall" Id="{715a832f-f3da-4b41-954e-71879b92c558}">
@@ -44,11 +44,18 @@ VAR_INST
 	_IgnoreInitRegistration			: I_IgnoreInitRegistration;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[_InitManager := GVL_Manager.Managers.GetInitManager(THIS^);
+        <ST><![CDATA[IF __QUERYINTERFACE(THIS^, _IgnoreInitRegistration) THEN
+	RegisterToInitManager := TRUE;
+	RETURN;
+END_IF
 
-IF _InitManager <> 0 AND __QUERYINTERFACE(THIS^, _IgnoreInitRegistration) THEN
-	_InitManager.RegisterObject(THIS^);
-END_IF]]></ST>
+_InitManager := GVL_Manager.Managers.GetInitManager(THIS^);
+IF _InitManager = 0 THEN
+	RegisterToInitManager := FALSE;
+	RETURN;
+END_IF
+
+RegisterToInitManager := _InitManager.RegisterObject(THIS^);]]></ST>
       </Implementation>
     </Method>
   </POU>

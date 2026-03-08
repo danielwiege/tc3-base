@@ -4,6 +4,8 @@
     <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_InitManager EXTENDS FB_ManagerBase IMPLEMENTS I_InitManager, I_IgnoreInitRegistration
 VAR
 	_AmountOfObjects				: UINT;
+	_InitExecuted					: BOOL;
+	_InitHasErrors					: BOOL;
 	{attribute 'hide'}
 	_ObjectList						: ARRAY[1..Par_InitManager.MaxAmountObject] OF I_Object;
 END_VAR
@@ -19,7 +21,44 @@ VAR_INPUT
 	i_Parent		: I_Object;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GVL_Manager.Collection.RegisterManager(THIS^);]]></ST>
+        <ST><![CDATA[FB_Init := SUPER^.FB_Init(
+	bInitRetains := bInitRetains,
+	bInCopyCode := bInCopyCode,
+	i_Parent := i_Parent
+);
+
+IF NOT FB_Init THEN
+	RETURN;
+END_IF
+
+FB_Init := GVL_Manager.Collection.RegisterManager(THIS^);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MainCall" Id="{71203fbf-83fd-45bc-ad2a-cd2698d7a124}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL
+VAR_INST
+	_Loop			: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^.MainCall() THEN
+	RETURN;
+END_IF
+
+IF NOT _InitExecuted THEN
+	_InitHasErrors := FALSE;
+
+	FOR _Loop := 1 TO MIN(_AmountOfObjects, Par_InitManager.MaxAmountObject) DO
+		IF _ObjectList[_Loop] <> 0 THEN
+			IF NOT _ObjectList[_Loop].Init() THEN
+				_InitHasErrors := TRUE;
+			END_IF
+		END_IF
+	END_FOR
+
+	_InitExecuted := TRUE;
+END_IF
+
+MainCall := NOT _InitHasErrors;]]></ST>
       </Implementation>
     </Method>
     <Method Name="RegisterObject" Id="{5e2339a4-3275-4eb7-a6b3-5f7e0c2ed63d}">
@@ -29,24 +68,28 @@ VAR_INPUT
 END_VAR
 VAR_INST
 	_Loop			: UINT;
+	_pLogManager	: POINTER TO FB_LogManager;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF i_Object = 0 THEN
 	RETURN;
 END_IF
 
-// Check if i_Manager is not already registered
-FOR	_Loop := 1 TO MIN(_AmountOfObjects + 1, Par_Manager.MaxAmountManagers) DO
+// Check if i_Object is not already registered
+FOR	_Loop := 1 TO MIN(_AmountOfObjects + 1, Par_InitManager.MaxAmountObject) DO
 	IF _ObjectList[_Loop] = i_Object THEN
-		{info <'DanWie: Add Logging.'>}
-		RegisterObject := FALSE;
+		// Duplicate registration is treated as success to keep init idempotent.
+		RegisterObject := TRUE;
 		RETURN;
 	END_IF
 END_FOR
 
 // Check if there is still space in the collection for registration
-IF _AmountOfObjects + 1 > Par_Manager.MaxAmountManagers THEN
-	{info <'DanWie: Add Logging.'>}
+IF _AmountOfObjects + 1 > Par_InitManager.MaxAmountObject THEN
+	_pLogManager := GVL_Manager.Managers.GetLogManager();
+	IF _pLogManager <> 0 THEN
+		_pLogManager^.AddEntry(i_Message := 'ERROR: FB_InitManager object list is full.');
+	END_IF
 	RegisterObject := FALSE;
 	RETURN;
 END_IF

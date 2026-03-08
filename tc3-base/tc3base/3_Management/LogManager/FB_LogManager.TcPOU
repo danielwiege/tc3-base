@@ -3,10 +3,98 @@
   <POU Name="FB_LogManager" Id="{ccb982af-5d8a-4d69-9c81-cb5e6e9222b5}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_LogManager EXTENDS FB_ManagerBase
 VAR
+	_WriteIndex					: UINT;
+	_AmountEntries				: UINT;
+	_HasOverflow				: BOOL;
+	_Entries					: ARRAY[1..100] OF STRING(255);
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
+    <Method Name="AddEntry" Id="{a95c90f5-a410-47c6-a2ec-f6d56771af89}">
+      <Declaration><![CDATA[METHOD PUBLIC AddEntry : BOOL
+VAR_INPUT
+	i_Message		: STRING(255);
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_Message = '' THEN
+	AddEntry := TRUE;
+	RETURN;
+END_IF
+
+_WriteIndex := (_WriteIndex MOD 100) + 1;
+_Entries[_WriteIndex] := i_Message;
+
+IF _AmountEntries < 100 THEN
+	_AmountEntries := _AmountEntries + 1;
+ELSE
+	_HasOverflow := TRUE;
+END_IF
+
+AddEntry := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Clear" Id="{97be1da7-f431-4ece-a74f-18f0df1ab5ca}">
+      <Declaration><![CDATA[METHOD PUBLIC Clear : BOOL
+VAR_INST
+	_Loop			: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR _Loop := 1 TO 100 DO
+	_Entries[_Loop] := '';
+END_FOR
+
+_WriteIndex := 0;
+_AmountEntries := 0;
+_HasOverflow := FALSE;
+
+Clear := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_Init" Id="{a22870d4-fdc1-4960-ac9f-be9c6b365f86}">
+      <Declaration><![CDATA[METHOD FB_Init : BOOL
+VAR_INPUT
+	bInitRetains	: BOOL; 	(* TRUE: the retain variables are initialized (reset warm / reset cold)*)
+	bInCopyCode		: BOOL; 	(* TRUE: the instance will be copied to the copy code afterward (online change)  *)
+	i_Parent		: I_Object;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FB_Init := SUPER^.FB_Init(
+	bInitRetains := bInitRetains,
+	bInCopyCode := bInCopyCode,
+	i_Parent := i_Parent
+);
+
+IF NOT FB_Init THEN
+	RETURN;
+END_IF
+
+FB_Init := GVL_Manager.Collection.RegisterManager(THIS^);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetAmountEntries" Id="{30dd98ca-4007-4a21-9874-aad4b5ed767a}">
+      <Declaration><![CDATA[METHOD PUBLIC GetAmountEntries : UINT]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[GetAmountEntries := _AmountEntries;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetLatestEntry" Id="{39f48e24-2f89-474a-ae76-663f44b199f4}">
+      <Declaration><![CDATA[METHOD PUBLIC GetLatestEntry : STRING(255)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _AmountEntries = 0 OR _WriteIndex = 0 THEN
+	GetLatestEntry := '';
+	RETURN;
+END_IF
+
+GetLatestEntry := _Entries[_WriteIndex];]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="HasOverflow" Id="{561ca256-3998-4dce-a6b5-d2cc453f7399}">
+      <Declaration><![CDATA[METHOD PUBLIC HasOverflow : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[HasOverflow := _HasOverflow;]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>
