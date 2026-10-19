@@ -1,47 +1,120 @@
 # tc3-base
-The tc3-base library provides a reusable foundation for TwinCAT 3 applications. It includes common data structures, utility functions, base classes, and architectural building blocks, forming an object-oriented framework to standardize and accelerate PLC development.
 
-## Current foundation
-- Object hierarchy with shared interfaces (`I_Object`, `I_Base`, `I_MainCall`, `I_FastCall`)
-- Program/data-container composition via child registration and call fan-out
-- Manager collection with default init + log managers
-- One-time init orchestration through `FB_InitManager`
-- Lightweight ring-buffer logging (`FB_LogManager` + `FB_Logger`)
+The **tc3-base** library provides a reusable foundation for TwinCAT 3 applications.
+It includes common data structures, utility functions, base classes, and architectural building blocks, forming an object-oriented framework to standardize and accelerate PLC development.
 
-## Notes
-- Base registration paths are implemented to support idempotent online-change style re-init.
-- Test project (`tc3-test`) now demonstrates super-call chaining and basic logger usage.
+---
 
-## Automatic build on GitHub push
+## Why tc3-base?
 
-The workflow in `.github/workflows/twincat-build.yml` runs on every push and can
-also be started manually from GitHub Actions. Compilation runs on the Windows
-buildserver using `tc3-build` and **Visual Studio 2019** (`--host vs2019`).
-It builds and installs the current `Tc3_Base` library first, then compiles
-`tc3-test` against it. The generated library and build logs are uploaded as a
-GitHub Actions artifact. Compiling `tc3-test` does not execute PLC runtime tests.
+PLC teams often re-implement the same foundational patterns in every project:
 
-One-time buildserver setup:
+- state handling and mode transitions,
+- device abstraction and lifecycle control,
+- error/event reporting,
+- timing and scheduling helpers,
+- shared utility data types.
 
-**Detailed step-by-step setup guide:**
-[Set up the buildserver](docs/Buildserver-Setup.md) — covering download, extraction,
-.NET Runtime installation, GitHub variables, runner registration, and troubleshooting.
+`tc3-base` centralizes those recurring concerns into a single reusable core so project code can focus on machine- or process-specific behavior.
 
-1. Install Visual Studio 2019 with the matching TwinCAT XAE integration and
-   project dependencies, plus a working distribution of `tc3-build` (0.4.0 or
-   compatible), including its runtime and dependency files.
-2. In this GitHub repository, open **Settings → Actions → Runners → New
-   self-hosted runner**, choose Windows x64, and follow the displayed setup
-   commands **on the buildserver**. Add the custom label `twincat-vs2019`.
-3. Run the runner in the logged-in build user's interactive session. The runner
-   and Visual Studio must use the same user and elevation level for COM/DTE
-   automation. Reserve this runner for TwinCAT builds; other repositories must
-   not install libraries concurrently on it.
-4. Under **Settings → Secrets and variables → Actions → Variables**, add
-   `TC3_BUILD_EXE` with the full buildserver path to `Tc3Build.exe` (or make the
-   executable available on the runner's `PATH`).
-5. Push the workflow, then check **Actions → TwinCAT build** for the result.
-   A queued job requires an online runner with all four workflow labels.
+## Goals
 
-Build commands are maintained in `scripts/Build-TwinCat.ps1`. The pipeline does
-not activate a TwinCAT configuration or start/restart a PLC runtime.
+- **Consistency**: standard naming and behavior across TwinCAT 3 projects.
+- **Reusability**: shared components that can be imported into multiple applications.
+- **Maintainability**: cleaner separation between framework and project logic.
+- **Scalability**: predictable architecture for growing systems and teams.
+- **Onboarding speed**: new engineers can follow familiar patterns quickly.
+
+## What this library is intended to include
+
+> The exact package contents depend on your implementation branch, but the framework is designed to host these categories:
+
+### 1. Base types and interfaces
+
+Core interfaces and abstract building blocks for components such as:
+
+- services,
+- devices,
+- modules,
+- stateful units.
+
+### 2. Utility primitives
+
+Reusable low-level helpers for:
+
+- type conversion,
+- safe bounds handling,
+- bit/word operations,
+- common math or timing patterns.
+
+### 3. Diagnostics and status handling
+
+Patterns for structured diagnostics, including:
+
+- status propagation,
+- fault/warning/event signaling,
+- reset and acknowledgement workflows.
+
+### 4. Architecture conventions
+
+Reference patterns for:
+
+- initialization and startup sequencing,
+- cyclic update execution,
+- layering and dependency boundaries.
+
+## Typical usage model
+
+A typical project integrates `tc3-base` as the lowest application layer:
+
+1. **Base layer (`tc3-base`)**
+   - generic framework code with no machine-specific dependencies.
+2. **Domain layer**
+   - application modules tailored to your line/cell/process.
+3. **Project integration layer**
+   - I/O mapping, safety glue, HMI integration, and commissioning-specific logic.
+
+This layering helps keep project customization separate from reusable framework components.
+
+## Who should use this
+
+`tc3-base` is most useful for teams that:
+
+- maintain multiple TwinCAT 3 projects,
+- want shared coding standards,
+- need a repeatable architecture for long-lived industrial systems,
+- expect multiple developers to collaborate across deployments.
+
+## Suggested repository conventions
+
+As the library grows, consider organizing content using clear folders/modules such as:
+
+- `Core/` for interfaces and fundamental abstractions,
+- `Utilities/` for helper function blocks/functions,
+- `Diagnostics/` for status/error handling,
+- `Examples/` for minimal usage demonstrations.
+
+## Contribution guidance
+
+When adding new framework elements:
+
+1. Keep APIs generic (avoid project-specific naming).
+2. Document execution expectations (cyclic, edge-triggered, startup-only, etc.).
+3. Include a small usage example when practical.
+4. Preserve backward compatibility where possible.
+5. Prefer composable interfaces over tightly coupled implementations.
+
+## Future enhancements (recommended)
+
+- Add concrete examples showing inheritance/composition patterns.
+- Add unit tests (e.g., TcUnit) for utility and state logic.
+- Add CI checks for export consistency and documentation validation.
+- Publish versioned release notes for integration stability.
+
+---
+
+If you want, this README can be further expanded with:
+
+- a concrete folder-by-folder API index,
+- coding style conventions for ST/OOP,
+- migration notes between framework versions.
