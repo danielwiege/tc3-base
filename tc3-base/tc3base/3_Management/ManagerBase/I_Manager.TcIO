@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_Manager" Id="{f9ffd650-d2ea-45ea-b6db-f7133ad2acf1}">
+    <Declaration><![CDATA[INTERFACE I_Manager EXTENDS I_Base
+]]></Declaration>
+    <Method Name="IsResponsible" Id="{bea29ac4-4af1-45f0-9d6a-6d6e580e1d1a}">
+      <Declaration><![CDATA[METHOD PUBLIC IsResponsible : BOOL
+VAR_INPUT
+	i_Requester		: I_Object;
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

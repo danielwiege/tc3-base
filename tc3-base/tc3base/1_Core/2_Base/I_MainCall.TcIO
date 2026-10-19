@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_MainCall" Id="{8b6a225b-0c76-4b59-a669-05a10a3fc837}">
+    <Declaration><![CDATA[INTERFACE I_MainCall EXTENDS __System.IQueryInterface 
+]]></Declaration>
+    <Method Name="MainCall" Id="{ed250825-f93c-43fe-a91f-5d9c5d6b97c3}">
+      <Declaration><![CDATA[METHOD MainCall : BOOL]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

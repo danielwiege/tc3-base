@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="Par_InitManager" Id="{0e81be1d-468a-4f8b-a2f4-876f05071527}" ParameterList="True">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	MaxAmountObject				: UINT := 10000;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

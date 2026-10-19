@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Program" Id="{88f81564-0663-4c0a-bef0-b24c283c5d6c}">
+    <Declaration><![CDATA[VAR_GLOBAL
+	Prg				: FB_Program(0);
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

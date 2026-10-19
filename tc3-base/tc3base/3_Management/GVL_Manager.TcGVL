@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_Manager" Id="{148d8567-00de-403f-8bdb-406acde852df}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'global_init_slot' := '40500'}
+VAR_GLOBAL
+	Collection				: FB_ManagerCollection(0);
+	Managers				: FB_ManagerAdapter(0);
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

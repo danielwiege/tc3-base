@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Prg_FastCall" Id="{1b0681f2-6f71-433c-9374-8e11a4d42798}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Prg_FastCall]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Prg.FastCall();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

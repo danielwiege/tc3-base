@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="I_IgnoreInitRegistration" Id="{55cd1db4-db2b-4ea8-a2a7-0dee57f9c87b}">
+    <Declaration><![CDATA[INTERFACE I_IgnoreInitRegistration EXTENDS __System.IQueryInterface 
+]]></Declaration>
+  </Itf>
+</TcPlcObject>

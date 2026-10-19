@@ -1,0 +1,38 @@
+name: TwinCAT build
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Library installation changes the runner's shared TwinCAT library repository.
+concurrency:
+  group: tc3-base-twincat-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: [self-hosted, Windows, X64, twincat-vs2019]
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: powershell
+    env:
+      TC3_BUILD_EXE: ${{ vars.TC3_BUILD_EXE }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Build library and example project
+        run: ./scripts/Build-TwinCat.ps1
+
+      - name: Upload library and build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twincat-build-${{ github.run_number }}
+          path: artifacts/
+          if-no-files-found: warn
